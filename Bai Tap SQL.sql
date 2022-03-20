@@ -1,4 +1,4 @@
-﻿--CREATE DATABASE QLMUAHANG;
+--CREATE DATABASE QLMUAHANG;
 --USE QLMUAHANG;
 --drop database QLMUAHANG
 CREATE TABLE CUSTOMER (
@@ -88,7 +88,7 @@ GO
 
 ---- 1 Tạo View (khung nhìn)
 --1.1 Tạo khung nhìn có tên là KH_ThanhToanTT để xem thông tin của 
---tất cả khách hàng đã sử dụng phương thức thanh toán trực tiếp (Khánh Nhi)
+--tất cả khách hàng đã sử dụng phương thức thanh toán trực tiếp 
 CREATE VIEW KH_ThanhToanTT AS
 SELECT KH.* FROM CUSTOMER KH
 JOIN ORDERS OD
@@ -101,7 +101,7 @@ SELECT * FROM KH_ThanhToanTT
 
 DROP VIEW KH_ThanhToanTT
 ----1.2 Tạo khung nhìn có tên là KH_DangGiao để xem thông tin của 
---khách hàng đã có trạng thái đặt hàng là đang giao (Bình Nhi)
+--khách hàng đã có trạng thái đặt hàng là đang giao
 CREATE VIEW KH_DangGiao AS
 SELECT KH.* FROM CUSTOMER KH
 JOIN ORDERS OD
@@ -112,7 +112,6 @@ SELECT * FROM KH_DangGiao
 
 DROP VIEW KH_DangGiao
 ---- 2 Tạo PROCEDER (Thủ tục)
---Phương Nam
 ---- 2.1 Update du lieu khach hang
 CREATE PROCEDURE Proc_Customer (
 	@MaKH CHAR(50),
@@ -183,7 +182,6 @@ SELECT * FROM dbo.ORDER_DETAIL
 
 DROP PROCEDURE Proc_TKProduct
 
--- Nguyên
 --2.4 Tạo một SP có tên là Add_Order để thêm một bản ghi mới vào bảng order với điều kiện 
 --phải thực hiện kiểm tra tính 
 --hợp lệ của dữ liệu được bổ sung, với nguyên tắc là không được 
@@ -253,7 +251,6 @@ deallocate BanhNgot1K
 
 select*from dbo.PRODUCT
 ---- 3 Tạo FUNCION (Hàm)
--- Ngân
 -- 3.1 Viết hàm trả về 1 bảng với các thông tin MaKH, TenKH,Email,SoDT,DiaChi của khách hàng có trong bảng ORDERS
 create function udf_customer()
 returns table as
@@ -307,7 +304,7 @@ SELECT ORDERS.MaKH, COUNT(DISTINCT MaDH) as SL_DonHang
 
  drop function SL_DonHang
 
- -- Hoài Nam
+
  -- 3.4 tạo hàm có tên CUSTOMRAD dùng để trả về bảng khách hàng có địa chỉ là liên chiểu
 CREATE FUNCTION CUSTOMRAD()
 RETURNS TABLE 
@@ -342,7 +339,7 @@ INSERT INTO ORDER_DETAIL VALUES
             ('OD007','DH0001','SP001', 5,   55000,  275000);
 
 
---TẠO TRIGGER VÀ EVENT
+--TẠO TRIGGER 
 --PHƯƠNG NAM
 ---Trigger
 --- Tao update trigger khi cap nhap so luong san pham thi phai lon hon so luong san pham cu
@@ -390,27 +387,6 @@ DELETE FROM dbo.PRODUCT WHERE MaSP = 'SP005'
 UPDATE dbo.PRODUCT SET GiaSP = 400000 WHERE MaSP = 'SP005'
 GO
 
--- Event
--- Tao 1 onetime Evt_IsProduct voi 20 giay de them 1 san pham bat ky
-CREATE EVENT Evt_IsProduct
-ON SCHEDULE AT CURRENT_TIMESTAMP + interval 20 second
-ON COMPLETION PRESERVE
-DO
-   INSERT INTO product (MaSP, TenSP, MoTa, GiaSP, SoLuongSP) 
-   VALUES('SP006', 'Banh Donus', 'Banh ngot', 50000, 20);
-
-drop event Evt_IsProduct2;
-select * from product;
-   
--- Tao 1 onetime Evt_DeProduct voi 40 giay de delete 1 san pham bat ky
-create event Evt_DeProduct
-on schedule at current_timestamp() + interval 40 second
-on completion preserve
-do
-delete from product where MaSP = 'SP006';
-select * from product;
-
-
 -- HỒNG NHI
 --Tạo trigger có tên là KTgia_insert tác động
 --lên bảng PRODUCT khi thêm dữ liệu. Trigger này đảm bảo rằng
@@ -431,6 +407,8 @@ END
 INSERT INTO PRODUCT VALUES
 --           MaSP           TenSP                 MoTa        GiaSP  SoLuongSP 
             ('SP005',  N'Bánh Sinh nhật 2 tầng', N'Bánh ngọt', 55000,  20);
+
+SELECT * FROM PRODUCT
 
 
 SELECT * FROM PRODUCT SP JOIN ORDER_DETAIL MH
@@ -579,3 +557,14 @@ insert into CUSTOMER(MaKH,TenKH,Email,SoDT,DiaChi)
 DELETE FROM CUSTOMER WHERE MaKH = 'KH0007';
 
 SELECT * FROM Customer_audits
+CREATE TABLE Customer_audits(
+    Change_id INT IDENTITY PRIMARY KEY,
+    MaKH VARCHAR (10) ,
+	TenKH NVARCHAR (100),
+	Email VARCHAR (100),
+	SoDT VARCHAR (10),
+	DiaChi VARCHAR (100),
+    Updated_at DATETIME NOT NULL,
+    Operation NVARCHAR(20) NOT NULL,
+    CHECK(Operation = 'INSERT ' or operation='DELETE')
+);
