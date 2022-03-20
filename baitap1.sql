@@ -96,6 +96,7 @@ drop event Evt_IsProduct;
 select * from product;
 SHOW PROCESSLIST;
 -- Event
+-- Phương Nam
 -- Tao 1 onetime Evt_IsProduct voi 20 giay de them 1 san pham bat ky
 CREATE EVENT Evt_IsProduct
 ON SCHEDULE AT CURRENT_TIMESTAMP + interval 20 second
@@ -115,7 +116,7 @@ do
 delete from product where MaSP = 'SP006';
 select * from product;
 
--- Nhi
+-- Hồng Nhi
 -- Tạo 1 event tự động xóa hết số lượng bánh còn lại trong 
 -- bảng Product sau 11h đêm hằng ngày 
 create event Ev_xoahangdu
@@ -217,3 +218,17 @@ end$$
 DELIMITER 
 
 show triggers from qlmuahang;
+
+
+-- Khánh nhi
+-- Làm cách nào để cập nhật trạng thái về "0" lúc 1 giờ chiều hàng ngày.
+CREATE EVENT IF NOT EXISTS session_cleaner_event
+ON SCHEDULE
+  EVERY 13 DAY_HOUR
+  COMMENT 'Clean up sessions at 13:00 daily!'
+  DO
+    DELETE FROM site_activity.sessions;
+    
+select * from order_detail
+select * from orders;
+show events from qlmuahang;
