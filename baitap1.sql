@@ -176,16 +176,23 @@ show events from qlmuahang;
 
 select * from PRODUCT;
 -- Nguyên
--- Event: Tao mot event de update gia Phi phuong thuc thanh toan cua banking len 500VND sau moi 1 nam
--- Ket thuc event nay trong vong sau 3 nam (3 nam sau tinh tu ngay hien tai se la ngay ket thuc hop dong vs MoMo)
-CREATE EVENT Event_UpBanking500DPerYearIn3Y
+-- Event: Tao mot event de update gia Phi phuong thuc thanh toan cua MoMo len 500VND sau moi 1 nam trong vong 5 nam, 
+-- bat dau tang tu ngay nay nam sau, tuc la tu nam thu 2 tro di moi bat dau tang phi
+-- Ket thuc event nay trong vong sau 5 nam (5 nam sau tinh tu ngay hien tai se la ngay ket thuc hop dong vs MoMo)
+
+SHOW EVENTS FROM qlmh;
+
+use qlmh;
+select *from payment;
+
+CREATE EVENT Event_UpMoMoTo500DPerYearIn5Y
 ON SCHEDULE EVERY 1 year
-STARTS CURRENT_TIMESTAMP + INTERVAL 1 year
-ENDS CURRENT_TIMESTAMP + INTERVAL 3 year
+STARTS CURRENT_TIMESTAMP + INTERVAL 1 year 
+ENDS CURRENT_TIMESTAMP + INTERVAL 5 year 
 DO
    update qlmh.payment set  PhiTT= PhiTT+500 where MaPTTT='TT003';
 
-drop event Event_UpBanking500DPerYearIn3Y;
+drop event Event_UpMoMoTo500DPerYearIn5Y;
 
 -- trigger: Khach hang co the trung ten voi nhau hoac trung dia chi, 
 -- Nhung moi khach hang khi dang ki dich vu chi duoc phep su dung 1 tai khoan gmail 
